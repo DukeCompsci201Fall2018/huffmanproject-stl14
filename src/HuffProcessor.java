@@ -80,6 +80,8 @@ public class HuffProcessor {
 	}
 
 	private void codingHelper(HuffNode root, String path, String[] encoding) {
+		if (root == null)
+			return;
 		if (root.myLeft == null && root.myRight == null)
 			encoding[root.myValue] = path;
 		codingHelper(root.myLeft, path + "0", encoding);
@@ -148,7 +150,7 @@ public class HuffProcessor {
 					current = current.myRight;
 				
 				
-				if (current.myValue != 0) {
+				if (current.myValue != -1) {
 					if (current.myValue == PSEUDO_EOF)
 						break;
 					else {
@@ -171,7 +173,7 @@ public class HuffProcessor {
 		if (bit == 0) {
 			HuffNode left = readTreeHeader(in);
 			HuffNode right = readTreeHeader(in);
-			return new HuffNode(0, 0, left, right);
+			return new HuffNode(-1, 0, left, right);
 		}
 		return null;
 	}
