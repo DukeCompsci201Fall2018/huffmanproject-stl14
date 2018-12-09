@@ -59,7 +59,7 @@ public class HuffProcessor {
 			String encode = codings[val];
 			out.writeBits(encode.length(), Integer.parseInt(encode, 2));
 		}
-		out.writeBits(codings[257].length(), Integer.parseInt(codings[257], 2));
+		out.writeBits(codings[PSEUDO_EOF].length(), Integer.parseInt(codings[PSEUDO_EOF], 2));
 	}
 
 	private void writeHeader(HuffNode root, BitOutputStream out) {
@@ -96,8 +96,6 @@ public class HuffProcessor {
 		while (pq.size() > 1) {
 			HuffNode left = pq.remove();
 			HuffNode right = pq.remove();
-			//create new HuffNode t with weight from
-			//left.weight+right.weight and left, right subtrees
 			HuffNode t = new HuffNode(-1, left.myWeight + right.myWeight, left, right);
 		    pq.add(t);
 		}
@@ -158,13 +156,16 @@ public class HuffProcessor {
 				}
 			}
 		}
-		
 	}
 
 	private HuffNode readTreeHeader(BitInputStream in) {
 		int bit = in.readBits(1);
 		if (bit == -1)
 			throw new HuffException("out of bits in reading tree header");
+		if (bit == 1) {
+			int value = in.readBits(9);
+			return new HuffNode(value, 0, null, null);
+		}
 		if (bit == 0) {
 			HuffNode left = readTreeHeader(in);
 			HuffNode right = readTreeHeader(in);
